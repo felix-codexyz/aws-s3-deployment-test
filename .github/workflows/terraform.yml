@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+      - 'feature/**'
+      - 'feat/**'
   pull_request:
     branches:
       - main
@@ -14,9 +16,9 @@ env:
 
 jobs:
   terraform-plan:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref != 'refs/heads/main')
     runs-on: ubuntu-latest
-    name: Terraform Plan on PR
+    name: Terraform Plan on PR or Feature Branch Push
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -37,7 +39,7 @@ jobs:
         run: terraform validate
 
       - name: Terraform Plan
-        run: terraform plan -var-file="terraform.tfvars"
+        run: terraform plan
 
   terraform-apply:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -57,4 +59,4 @@ jobs:
         run: terraform init
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve -var-file="terraform.tfvars"
+        run: terraform apply -auto-approve
