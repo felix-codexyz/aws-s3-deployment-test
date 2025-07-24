@@ -8,3 +8,8 @@ variable "environment" {
   type        = string
   default     = "prod"
 }
+
+variable "tags" {
+  description = "Tags to apply to the S3 bucket"
+  type        = map(string)
+}
