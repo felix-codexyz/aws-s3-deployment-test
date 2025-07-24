@@ -8,12 +8,12 @@ variable "bucket_name" {
   }
 }
 
-variable "tags" {
-  description = "A map of tags to assign to the bucket"
-  type        = map(string)
+variable "environment" {
+  description = "Environment name (e.g., dev, prod)"
+  type        = string
 
   validation {
-    condition     = contains(keys(var.tags), "Environment")
-    error_message = "Tags must include an 'Environment' key."
+    condition     = contains(["dev", "prod", "staging"], var.environment)
+    error_message = "Environment must be one of: dev, prod, staging."
   }
 }
