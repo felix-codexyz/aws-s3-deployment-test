@@ -1,10 +1,10 @@
-terraform { 
-  cloud { 
-    
-    organization = "aws-account-organization" 
+terraform {
+  cloud {
 
-    workspaces { 
-      name = "aws-s3-deployment-test" 
-    } 
-  } 
+    organization = "aws-account-organization"
+
+    workspaces {
+      name = "aws-s3-deployment-test"
+    }
+  }
 }
