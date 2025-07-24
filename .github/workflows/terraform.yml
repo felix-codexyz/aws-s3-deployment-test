@@ -23,6 +23,13 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1  # Change to your preferred region
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -44,7 +51,7 @@ jobs:
   terraform-apply:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
-    name: Terraform Apply on Merge
+    name: Terraform Apply on PR Merge to Main
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
