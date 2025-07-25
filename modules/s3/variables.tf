@@ -1,10 +1,14 @@
 variable "bucket_name" {
-  description = "Name of the S3 bucket"
   type        = string
+  description = "Name of the S3 bucket"
+}
+
+variable "tags" {
+  type        = map(string)
+  description = "Tags to apply to the bucket"
 }
 
 variable "environment" {
-  description = "Environment name (e.g., dev, prod)"
   type        = string
-  default     = "prod"
+  description = "Environment name"
 }

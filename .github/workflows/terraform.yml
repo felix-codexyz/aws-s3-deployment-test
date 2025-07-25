@@ -4,23 +4,37 @@ on:
   push:
     branches:
       - main
+      - 'feature/**'
+      - 'feat/**'
   pull_request:
     branches:
       - main
 
+env:
+  TF_VAR_bucket_name: "myapp-${{ github.run_id }}"
+  TF_VAR_environment: "dev"
+
 jobs:
   terraform-plan:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref != 'refs/heads/main')
     runs-on: ubuntu-latest
-    name: Terraform Plan on PR
+    name: Terraform Plan on PR or Feature Branch Push
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1  # Change to your preferred aws region
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.8.4
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
       - name: Terraform Init
         run: terraform init
@@ -32,12 +46,12 @@ jobs:
         run: terraform validate
 
       - name: Terraform Plan
-        run: terraform plan -var-file="envs/prod/terraform.tfvars"
+        run: terraform plan
 
   terraform-apply:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
-    name: Terraform Apply on Merge
+    name: Terraform Apply on PR Merge to Main
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -46,9 +60,10 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.8.4
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
       - name: Terraform Init
         run: terraform init
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve -var-file="envs/prod/terraform.tfvars"
+        run: terraform apply -auto-approve
