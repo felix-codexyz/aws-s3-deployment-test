@@ -16,4 +16,9 @@ variable "environment" {
     condition     = contains(["dev", "prod", "staging"], var.environment)
     error_message = "Environment must be one of: dev, prod, staging."
   }
+  
+}
+variable "aws_region" {
+  type    = string
+  default = "us-east-1" # or override via workspace/environment variable
 }
